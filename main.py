@@ -24,7 +24,7 @@ def createData(n_inputs, n_neurons, batchSize=1):
     return(inputs, weights, biases)
 
 class Neuron:
-    def __init__(self, inputs, weights, bias, activationFunc=activation.RecLE):
+    def __init__(self, inputs, weights, bias, activationFunc=activation.none):
         self.inputs = inputs
         self.weights = weights
         self.bias = bias
@@ -34,8 +34,9 @@ class Neuron:
         return(self.activationFunc(mathlib.dot2Vectors(self.inputs, self.weights)+self.bias))
 
 class Layer:
-    def __init__(self, inputs, weights, biases, normalize=True, *args, **kwargs):
+    def __init__(self, inputs, weights, biases, normalize=True, layerActivation=activation.none, *args, **kwargs):
         self.normalize = normalize
+        self.layerActivation = layerActivation
         self.neurons = self._createNeurons(inputs, weights, biases, *args, **kwargs)
 
     def _createNeurons(self, inputs, weights, biases, *args, **kwargs):
@@ -46,6 +47,7 @@ class Layer:
     
     def calc(self):
         out = np.array([neuron.calc() for neuron in self.neurons])
+        out = self.layerActivation(out)
         if self.normalize:
             out = mathlib.normalize(out)
         return(out)
@@ -66,5 +68,6 @@ class Batch:
 if __name__ == "__main__":
     inputs, weights, biases = createSetData()#n_inputs=3, n_neurons=2, batchSize=1)
     
-    batch = Batch(inputs, weights, biases, activationFunc=activation.softmax)
+    batch = Batch(inputs, weights, biases, layerActivation=activation.protectedSoftmax)
+    # batch = Batch(inputs, weights, biases, activationFunc=activation.softmax, layerActivation=activation.none)
     print(batch.calc())
