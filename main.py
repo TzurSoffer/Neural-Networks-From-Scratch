@@ -1,6 +1,8 @@
-import numpy as np#< use own later
-import mathlib
+import numpy as np
+
+import network
 import activation
+import loss
 np.random.seed(0)
 
 def createSetData():
@@ -23,51 +25,11 @@ def createData(n_inputs, n_neurons, batchSize=1):
     biases = np.zeros(n_neurons)
     return(inputs, weights, biases)
 
-class Neuron:
-    def __init__(self, inputs, weights, bias, activationFunc=activation.none):
-        self.inputs = inputs
-        self.weights = weights
-        self.bias = bias
-        self.activationFunc = activationFunc
-    
-    def calc(self):
-        return(self.activationFunc(mathlib.dot2Vectors(self.inputs, self.weights)+self.bias))
+inputs, weights, biases = createSetData()#n_inputs=3, n_neurons=2, batchSize=1)
 
-class Layer:
-    def __init__(self, inputs, weights, biases, normalize=True, layerActivation=activation.none, *args, **kwargs):
-        self.normalize = normalize
-        self.layerActivation = layerActivation
-        self.neurons = self._createNeurons(inputs, weights, biases, *args, **kwargs)
+batch = network.Batch(inputs, weights, biases, layerActivation=activation.protectedSoftmax)
+# batch = Batch(inputs, weights, biases, activationFunc=activation.softmax, layerActivation=activation.none)
+out = batch.calc()
+print(np.array(out))
 
-    def _createNeurons(self, inputs, weights, biases, *args, **kwargs):
-        neurons = []
-        for w, b in zip(weights, biases):
-            neurons.append(Neuron(inputs, w, b, *args, **kwargs))
-        return(neurons)
-    
-    def calc(self):
-        out = np.array([neuron.calc() for neuron in self.neurons])
-        out = self.layerActivation(out)
-        if self.normalize:
-            out = mathlib.normalize(out)
-        return(out)
-
-class Batch:
-    def __init__(self, inputsBatch, *args, **kwargs):
-        self.batch = self._createBatch(inputsBatch, *args, **kwargs)
-
-    def _createBatch(self, inputsBatch, *args, **kwargs):
-        batch = []
-        for inputs in inputsBatch:
-            batch.append(Layer(inputs, *args, **kwargs))
-        return(batch)
-    
-    def calc(self):
-        return(np.array([b.calc() for b in self.batch]))
-
-if __name__ == "__main__":
-    inputs, weights, biases = createSetData()#n_inputs=3, n_neurons=2, batchSize=1)
-    
-    batch = Batch(inputs, weights, biases, layerActivation=activation.protectedSoftmax)
-    # batch = Batch(inputs, weights, biases, activationFunc=activation.softmax, layerActivation=activation.none)
-    print(batch.calc())
+print(np.array((loss.calcLoss(out[0]))))
