@@ -1,4 +1,5 @@
 import math
+import mathlib
 
-def calcLoss(vals):
-    return([-math.log(v) for v in vals])
+def calcLoss(vals, index):
+    return(-math.log(mathlib.clip(vals[index], 1e-7, 1-1e-7)))

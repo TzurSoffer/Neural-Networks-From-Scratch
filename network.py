@@ -1,5 +1,6 @@
 import mathlib
 import activation
+import loss
 
 class Neuron:
     def __init__(self, inputs, weights, bias, activationFunc=activation.none):
@@ -7,12 +8,13 @@ class Neuron:
         self.weights = weights
         self.bias = bias
         self.activationFunc = activationFunc
-    
+
     def calc(self):
         return(self.activationFunc(mathlib.dot2Vectors(self.inputs, self.weights)+self.bias))
 
 class Layer:
     def __init__(self, inputs, weights, biases, normalize=True, layerActivation=activation.none, *args, **kwargs):
+        self.out = None
         self.normalize = normalize
         self.layerActivation = layerActivation
         self.neurons = self._createNeurons(inputs, weights, biases, *args, **kwargs)
@@ -24,11 +26,14 @@ class Layer:
         return(neurons)
     
     def calc(self):
-        out = [neuron.calc() for neuron in self.neurons]
-        out = self.layerActivation(out)
+        self.out = [neuron.calc() for neuron in self.neurons]
+        self.out = self.layerActivation(self.out)
         if self.normalize:
-            out = mathlib.normalize(out)
-        return(out)
+            self.out = mathlib.normalize(self.out)
+        return(self.out)
+
+    def calcLoss(self, correctIndex):
+        return(loss.calcLoss(self.out, correctIndex))
 
 class Batch:
     def __init__(self, inputsBatch, *args, **kwargs):
@@ -41,4 +46,7 @@ class Batch:
         return(batch)
     
     def calc(self):
-        return([b.calc() for b in self.batch])
+        return([layer.calc() for layer in self.batch])
+    
+    def calcLoss(self, correctIndexes):
+        return(mathlib.mean([self.batch[i].calcLoss(correctIndexes[i]) for i in range(len(self.batch))]))

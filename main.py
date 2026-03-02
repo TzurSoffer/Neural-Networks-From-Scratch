@@ -21,7 +21,7 @@ def createSetData():
 
 def createData(n_inputs, n_neurons, batchSize=1):
     inputs = np.random.randn(batchSize, n_neurons)
-    weights = 0.1*np.random.randn(n_inputs, n_neurons)
+    weights = 0.01*np.random.randn(n_inputs, n_neurons)
     biases = np.zeros(n_neurons)
     return(inputs, weights, biases)
 
@@ -32,4 +32,8 @@ batch = network.Batch(inputs, weights, biases, layerActivation=activation.protec
 out = batch.calc()
 print(np.array(out))
 
-print(np.array((loss.calcLoss(out[0]))))
+print(loss.calcLoss([0.7, 0.2, 0.1], 0))
+print(loss.calcLoss([0.5, 0.1, 0.4], 1))
+print(loss.calcLoss([0.02, 0.9, 0.08], 1))
+
+print(batch.calcLoss([0,0,0]))
