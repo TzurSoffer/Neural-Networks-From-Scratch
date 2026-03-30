@@ -13,20 +13,20 @@ class Batch(Layer):
 
     def forward(self, inputs) -> list[list[float]]:
         """ Forward all layers in the batch and return their outputs """
-        return([super().forward(i) for i in inputs])
+        res = [super().forward(i) for i in inputs]
+        self.inputs = inputs
+        return(res)
 
     def backward(self, d_valuesBatched: list[list[float]]) -> list[list[float]]:
-        """ Average the gradients for all neurons in the batch """
-        for neuron in self.neurons:
-            neuron.resetDWB()        #< can be removed if properly used with optimizer
+        """ Average the gradients for the batch for more details, look at the docstring of Layer"""
 
-        d_inputsBatched = []
-        for d_values in d_valuesBatched:
-            ## regular layer pass with neuron.backward_batch instead of the normal neuron.backward
-            d_inputs = [0]*self.inputsLen
-            for neuron, d_val in zip(self.neurons, d_values):
-                res = neuron.backward_batch(d_val)
-                d_inputs = Mathlib.addTwoVectors(res, d_inputs)   #< Total derivative is the sum of the derivative with respect to the input of each neuron
-            d_inputsBatched.append(d_inputs)
-        return(d_inputsBatched)
-            
+        d_inputs = []
+        d_weights = Mathlib.zeroes((len(self.weights), len(self.weights[0])))
+        d_biases = Mathlib.zeroes((len(self.weights),))
+        for inputs, d_values in zip(self.inputs, d_valuesBatched):
+            d_inputs.append(super().backward(d_values, inputs))
+            d_weights = Mathlib.addTwoMatrices(d_weights, self.d_weights)
+            d_biases = Mathlib.addTwoVectors(d_biases, self.d_biases)
+        self.d_weights = d_weights
+        self.d_biases = d_biases
+        return(d_inputs)

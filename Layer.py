@@ -1,6 +1,5 @@
 import Mathlib
 import Activation
-from Neuron import Neuron
 
 class Layer:
     """A collection of neurons forming a single layer in the network"""
@@ -8,37 +7,60 @@ class Layer:
                  activationFunc: Activation=Activation.Pass,   #< Neuron-level activation function
                  ):
         
+        self.inputs = []
         self.inputsLen = inputCount
-        weights, biases = self._createLayerData(inputCount, neuronCount)
+        self.weights, self.biases = self._createLayerData(inputCount, neuronCount)
         self.activationFunc = activationFunc
-        self._createNeurons(weights, biases, activationFunc=activationFunc)  # create neuron objects
+
+        self.out = None
+        self.d_weights = []
+        self.d_biases = []
 
     def _createLayerData(self, inputCount: int=10, neuronCount: int=5) -> tuple[list[float], list[float]]:
         weights = [[Mathlib.randomNumber(minimum=-1.0, maximum=1.0) for _ in range(inputCount)] for _ in range(neuronCount)]
         biases = [Mathlib.randomNumber() for _ in range(neuronCount)]
         return(weights, biases)
 
-    def _createNeurons(self, weights: list[float], biases: list[float], activationFunc: Activation) ->  None:
-        self.neurons = []
-        for w, b in zip(weights, biases):
-            self.neurons.append(Neuron(w, b, activationFunc))
+    def forward(self, inputs: list[float]) -> float:
+        """
+        Compute the neurons' output.
+        Multiply each input by its corresponding weight, sum the
+        results, add the bias and then apply the activation function.
+        
+        multiply the inputs [i1, i2.. in] with weights [w1, w1... wn] to get i1*w1+i2*w2... +in*wn, then add the bias
+        """
+        self.inputs = inputs
+        if len(self.weights[0]) != len(self.inputs):
+            raise Exception("inputs and weight must have the same length!")
+        self.out = [Mathlib.dot2Vectors(self.inputs, weights)+bias for weights, bias in zip(self.weights, self.biases)]     #< sum(w*x)+b
+        return([self.activationFunc.forward(out) for out in self.out])
 
-    def forward(self, inputs: list[float]) -> list[float]:
-        """Calculate outputs for all neurons in the layer """
-        return([neuron.forward(inputs) for neuron in self.neurons])
-    
-    def backward(self, d_values: list[float]) -> list[float]:
-        """Calculate gradients for all neurons in the layer."""
-        d_inputs = [0]*self.inputsLen
-        for neuron, d_val in zip(self.neurons, d_values):
-            res = neuron.backward(d_val)
-            d_inputs = Mathlib.addTwoVectors(res, d_inputs)   #< Total derivative is the sum of the derivative with respect to the input of each neuron
+    def backward(self, d_values:list[float], inputs=None) -> list[float]:
+        """ Compute gradient 
+        The following is the explanation for the backward for a SINGLE neuron, a layer would just be a list of these.
+            since forward is computed as Activation(sum(x1*w1, x2*w2..., bias)),
+            the backward for the weights would be computed as [Activation`(sum(...))*sum`(...)*xi] for every element,
+            and the backward for the inputs would be computed as [Activation`(sum(...))*sum`(...)*wi] for every element,
+            note that sum`(...) is equal to 1 no matter the reference or input.
+            this makes backward for the weights be simplified to [Activation`(sum(...))*xi] for every element,
+            and the backward for the inputs be [Activation`(sum(...))*wi] for every element.
+        """
+        if inputs == None:
+            inputs = self.inputs
+        d_inputs = Mathlib.zeroes((len(inputs),))
+        self.d_weights = []
+        self.d_biases = []
+        for out, weights, d_val in zip(self.out, self.weights, d_values):
+            activation_dx = self.activationFunc.backward(out)*d_val      #< chain rule
+            d_inputs = Mathlib.addTwoVectors([activation_dx*w for w in weights], d_inputs)   #< Total derivative is the sum of the derivatives with respect to the input of each neuron since they are all the same inputs
+            self.d_weights.append([activation_dx*i for i in inputs])
+            self.d_biases.append(activation_dx)
+
         return(d_inputs)
-
 
     def getWeights(self) -> list[list[float]]:
         """ return a list of lists of all weights """
-        return([n.weights for n in self.neurons])
+        return(self.weights)
     def getBiases(self) -> list[float]:
         """ return a list of all biases """
-        return([n.bias for n in self.neurons])
+        return(self.biases)

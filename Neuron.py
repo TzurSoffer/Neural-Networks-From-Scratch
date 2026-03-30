@@ -10,14 +10,10 @@ class Neuron:
 
         self.out = None
         self.d_inputs = None
-        self.resetDWB()
-
-        self.activationFunc = activationFunc
-
-    def resetDWB(self):
-        """ Reset d_weights and d_bias """
         self.d_weights = [0]*len(self.weights)
         self.d_bias = 0
+
+        self.activationFunc = activationFunc
 
     def forward(self, inputs: list[float]) -> float:
         """
@@ -33,12 +29,14 @@ class Neuron:
         self.out = Mathlib.dot2Vectors(self.inputs, self.weights)+self.bias     #< sum(w*x)+b
         return(self.activationFunc.forward(self.out))
 
-    def backward(self, d_val:float) -> tuple[list[float], list[float], float]:
+    def backward(self, d_val:float) -> list[float]:
         """ Compute gradient 
         since forward is computed as Activation(sum(x1*w1, x2*w2..., bias)),
-        the backward for the weights would be computed as [Activation`(...)*sum`(...)*xi] for every element,
-        and the backward for the inputs would be computed as [Activation`(...)*sum`(...)*wi] for every element,
+        the backward for the weights would be computed as [Activation`(sum(...))*sum`(...)*xi] for every element,
+        and the backward for the inputs would be computed as [Activation`(sum(...))*sum`(...)*wi] for every element,
         note that sum`(...) is equal to 1 no matter the reference or input.
+        this makes backward for the weights be simplified to [Activation`(sum(...))*xi] for every element,
+        and the backward for the inputs be [Activation`(sum(...))*wi] for every element.
         """
         activation_dx = self.activationFunc.backward(self.out)*d_val #< chain rule
         self.d_inputs = [activation_dx*w for w in self.weights]

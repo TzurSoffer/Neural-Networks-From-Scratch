@@ -1,5 +1,12 @@
 import random
 
+def zeroes(shape):
+    """ Creates a matrix of zeroes with the given shape """
+    if len(shape) == 1:
+        return([0.0]*shape[0])
+    else:
+        return([zeroes(shape[1:]) for i in range(shape[0])])
+
 def clip(val:float, minVal:float=0.0, maxVal:float=1.0) -> float:
     return(min(maxVal, max(minVal, val)))
 
@@ -42,6 +49,12 @@ def dotVectorMatrix(vector:list[float], matrix:list[list[float]]) -> list[float]
 
 def addTwoVectors(v1:list[float], v2:list[float]) -> list[float]:
     return([i1+i2 for i1,i2 in zip(v1,v2)])
+
+def addTwoMatrices(m1:list[list[float]], m2:list[list[float]]) -> list[list[float]]:
+    out = []
+    for r1, r2 in zip(m1, m2):
+        out.append(addTwoVectors(r1, r2))
+    return(out)
 
 def vectorScalerMult(vector: list[float], scale: float) -> list[float]:
     return([v*scale for v in vector])

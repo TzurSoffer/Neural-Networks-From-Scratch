@@ -6,7 +6,6 @@ class Optimizer_SGD:
         self.learning_rate = learning_rate
 
     def update(self, layer:Layer) -> None:
-        for neuron in layer.neurons:
-            neuron.weights = [w - self.learning_rate * dw for w, dw in zip(neuron.weights, neuron.d_weights)]
-            neuron.bias -= self.learning_rate * neuron.d_bias
-            neuron.resetDWB()
+        for i in range(len(layer.weights)):
+            layer.weights[i] = [w - self.learning_rate * dw for w, dw in zip(layer.weights[i], layer.d_weights[i])]
+            layer.biases[i] -= self.learning_rate * layer.d_biases[i]
