@@ -57,10 +57,16 @@ def addTwoMatrices(m1:list[list[float]], m2:list[list[float]]) -> list[list[floa
     return(out)
 
 def vectorScalerMult(vector: list[float], scale: float) -> list[float]:
+    if type(vector[0]) == list:
+        return([vectorScalerMult(v, scale) for v in vector])
     return([v*scale for v in vector])
+def scale(vector: list[float], scale: float) -> list[float]:
+    return(vectorScalerMult(vector, scale))
 
 def transpose(m) -> list:
     return(list(zip(*m)))
+def T(m):
+    return(transpose(m))
 
 def elementWiseMult(v1:list[float], v2:list[float]) -> list[float]:
     result = []

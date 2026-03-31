@@ -1,5 +1,6 @@
 import Mathlib
 import Activation
+import math
 
 class Layer:
     """A collection of neurons forming a single layer in the network"""
@@ -17,8 +18,9 @@ class Layer:
         self.d_biases = []
 
     def _createLayerData(self, inputCount: int=10, neuronCount: int=5) -> tuple[list[float], list[float]]:
-        weights = [[Mathlib.randomNumber(minimum=-1.0, maximum=1.0) for _ in range(inputCount)] for _ in range(neuronCount)]
-        biases = [Mathlib.randomNumber() for _ in range(neuronCount)]
+        scale = 1.0 / math.sqrt(inputCount)  #< Xavier/Glorot initialization, scale by 1/sqrt(inputCount) to prevent overflow
+        weights = [[Mathlib.randomNumber(minimum=-scale, maximum=scale) for _ in range(inputCount)] for _ in range(neuronCount)]
+        biases = [0.0 for _ in range(neuronCount)]  # Initialize biases to 0
         return(weights, biases)
 
     def forward(self, inputs: list[float]) -> float:

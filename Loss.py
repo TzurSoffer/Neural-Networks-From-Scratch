@@ -73,7 +73,8 @@ class SoftmaxCrossEntropy:
 
         for row, t in zip(self.softmaxOutput, self.target):
             row[t] -= 1
-            row = [x*dvalue / batchSize for x in row]
+            # if dvalue != 1:
+            row = [x*dvalue/batchSize for x in row]
             out.append(row)
 
         return(out)
