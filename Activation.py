@@ -23,6 +23,19 @@ class ReLU:
         """ partial derivative of max(x,0) with respect to x """
         return(1.0 if val > 0.0 else 0.0)
 
+class LeakyReLU:
+    """ ReLU with small negative slope to prevent dying ReLU problem. Gradient flows even when val < 0 """
+    alpha = 0.01  #< small negative slope
+    
+    @staticmethod
+    def forward(val: float) -> float:
+        return(val if val > 0.0 else LeakyReLU.alpha * val)
+    
+    @staticmethod
+    def backward(val: float) -> float:
+        """ partial derivative of LeakyReLU with respect to x """
+        return(1.0 if val > 0.0 else LeakyReLU.alpha)
+
 class Softmax:
     """ converts any output to be squashed from 0 to 1 and also had a nice derivative when paired with  Cross-Entropy """
     @staticmethod
