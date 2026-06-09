@@ -32,6 +32,7 @@ class Batch(Layer):
         self.d_weights = d_weights
         self.d_biases = d_biases
 
+        # AVG is handled at the Loss function (more efficient)
         # scaleFactor = 1 / len(self.inputs)
         # self.d_weights = Mathlib.scale(d_weights, scaleFactor)
         # self.d_biases = Mathlib.scale(d_biases, scaleFactor)

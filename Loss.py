@@ -1,6 +1,7 @@
 import math
 import Mathlib
 import Activation
+import copy
 
 """ Calculates the error of the output (mainly Softmax) using -log(x) """
 
@@ -72,9 +73,9 @@ class SoftmaxCrossEntropy:
         out = []
 
         for row, t in zip(self.softmaxOutput, self.target):
-            row[t] -= 1
-            # if dvalue != 1:
-            row = [x*dvalue/batchSize for x in row]
-            out.append(row)
+            copiedRow = copy.copy(row)
+            copiedRow[t] -= 1
+            copiedRow = [x*dvalue/batchSize for x in copiedRow]
+            out.append(copiedRow)
 
         return(out)

@@ -89,3 +89,61 @@ def normalize(values:list[float]) -> list[float]:
 
 def randomNumber(minimum:float=-10.0, maximum:float=10.0, decimals:int=2) -> float:
     return(round(random.uniform(minimum, maximum), decimals))
+
+def hilbertIndexToXy(index, order):
+    n = 1 << order
+    x = y = 0
+    t = index
+    s = 1
+
+    while s < n:
+        rx = 1 & (t // 2)
+        ry = 1 & (t ^ rx)
+
+        if ry == 0:
+            if rx == 1:
+                x = s - 1 - x
+                y = s - 1 - y
+            x, y = y, x
+
+        x += s * rx
+        y += s * ry
+
+        t //= 4
+        s *= 2
+
+    return x, y
+
+def hilbertFlatten(array2d):
+    n = len(array2d)
+    if any(len(row) != n for row in array2d):            #< Check that the array is square and size is a power of 2
+        print(n, len(array2d[0]))
+        raise ValueError("Array must be square")
+
+    if n & (n - 1):
+        raise ValueError("Size must be a power of 2")
+
+    order = (n.bit_length() - 1)
+
+    result = []
+    for i in range(n * n):
+        x, y = hilbertIndexToXy(i, order)
+        result.append(array2d[y][x])
+
+    return result
+
+def hilbertUnflatten(data):
+    n2 = len(data)
+    n = int(n2 ** 0.5)
+
+    if n * n != n2 or n & (n - 1):
+        raise ValueError("Length must be a square of a power of 2")
+
+    order = n.bit_length() - 1
+    array2d = [[None] * n for _ in range(n)]
+
+    for i, value in enumerate(data):
+        x, y = hilbertIndexToXy(i, order)
+        array2d[y][x] = value
+
+    return array2d

@@ -10,15 +10,18 @@ class Layer:
         
         self.inputs = []
         self.inputsLen = inputCount
-        self.weights, self.biases = self._createLayerData(inputCount, neuronCount)
         self.activationFunc = activationFunc
+        self.weights, self.biases = self._createLayerData(inputCount, neuronCount)
 
         self.out = None
         self.d_weights = []
         self.d_biases = []
 
     def _createLayerData(self, inputCount: int=10, neuronCount: int=5) -> tuple[list[float], list[float]]:
-        scale = 1.0 / math.sqrt(inputCount)  #< Xavier/Glorot initialization, scale by 1/sqrt(inputCount) to prevent overflow
+        if self.activationFunc in (Activation.ReLU, Activation.LeakyReLU):
+            scale = 2.0 / math.sqrt(inputCount)  #< He/Kaiming initialization, scale by 2/sqrt(inputCount) to prevent overflow (better for ReLu activation functions)
+        else:
+            scale = 1.0 / math.sqrt(inputCount)  #< Xavier/Glorot initialization, scale by 1/sqrt(inputCount) to prevent overflow (better for sigmoid activation functions)
         weights = [[Mathlib.randomNumber(minimum=-scale, maximum=scale) for _ in range(inputCount)] for _ in range(neuronCount)]
         biases = [0.0 for _ in range(neuronCount)]  # Initialize biases to 0
         return(weights, biases)
@@ -34,8 +37,9 @@ class Layer:
         self.inputs = inputs
         if len(self.weights[0]) != len(self.inputs):
             raise Exception("inputs and weight must have the same length!")
-        self.out = [Mathlib.dot2Vectors(self.inputs, weights)+bias for weights, bias in zip(self.weights, self.biases)]     #< sum(w*x)+b
-        return([self.activationFunc.forward(out) for out in self.out])
+        self.perActivationOut = [Mathlib.dot2Vectors(self.inputs, weights)+bias for weights, bias in zip(self.weights, self.biases)]     #< sum(w*x)+b
+        self.out = [self.activationFunc.forward(out) for out in self.perActivationOut]
+        return(self.out)
 
     def backward(self, d_values:list[float], inputs=None) -> list[float]:
         """ Compute gradient 
@@ -52,7 +56,7 @@ class Layer:
         d_inputs = Mathlib.zeroes((len(inputs),))
         self.d_weights = []
         self.d_biases = []
-        for out, weights, d_val in zip(self.out, self.weights, d_values):
+        for out, weights, d_val in zip(self.perActivationOut, self.weights, d_values):
             activation_dx = self.activationFunc.backward(out)*d_val      #< chain rule
             d_inputs = Mathlib.addTwoVectors([activation_dx*w for w in weights], d_inputs)   #< Total derivative is the sum of the derivatives with respect to the input of each neuron since they are all the same inputs
             self.d_weights.append([activation_dx*i for i in inputs])
