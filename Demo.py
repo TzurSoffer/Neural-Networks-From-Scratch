@@ -2,7 +2,10 @@ import tkinter as tk
 import json
 
 # Import your custom framework modules
-import Mathlib
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
 import Activation
 from Layer import Layer
 from Batch import Batch

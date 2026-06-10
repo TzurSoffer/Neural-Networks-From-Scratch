@@ -1,4 +1,7 @@
-import Mathlib
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
 import Activation
 import math
 
@@ -22,7 +25,7 @@ class Layer:
             scale = 2.0 / math.sqrt(inputCount)  #< He/Kaiming initialization, scale by 2/sqrt(inputCount) to prevent overflow (better for ReLu activation functions)
         else:
             scale = 1.0 / math.sqrt(inputCount)  #< Xavier/Glorot initialization, scale by 1/sqrt(inputCount) to prevent overflow (better for sigmoid activation functions)
-        weights = [[Mathlib.randomNumber(minimum=-scale, maximum=scale) for _ in range(inputCount)] for _ in range(neuronCount)]
+        weights = [[Mathlib.randomNumber(-scale, scale, 2) for _ in range(inputCount)] for _ in range(neuronCount)]
         biases = [0.0 for _ in range(neuronCount)]  # Initialize biases to 0
         return(weights, biases)
 
@@ -53,7 +56,7 @@ class Layer:
         """
         if inputs == None:
             inputs = self.inputs
-        d_inputs = Mathlib.zeroes((len(inputs),))
+        d_inputs = Mathlib.zeroes(len(inputs))
         self.d_weights = []
         self.d_biases = []
         for out, weights, d_val in zip(self.perActivationOut, self.weights, d_values):

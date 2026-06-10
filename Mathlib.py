@@ -1,6 +1,6 @@
 import random
 
-def zeroes(shape):
+def zeroes(*shape):
     """ Creates a matrix of zeroes with the given shape """
     if len(shape) == 1:
         return([0.0]*shape[0])

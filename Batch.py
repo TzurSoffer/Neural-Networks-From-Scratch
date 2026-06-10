@@ -1,4 +1,7 @@
-import Mathlib
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
 import Activation
 from Layer import Layer
 
@@ -21,8 +24,8 @@ class Batch(Layer):
 
         d_inputs = []
 
-        d_weights = Mathlib.zeroes((len(self.weights), len(self.weights[0])))
-        d_biases = Mathlib.zeroes((len(self.weights),))
+        d_weights = Mathlib.zeroes(len(self.weights), len(self.weights[0]))
+        d_biases = Mathlib.zeroes(len(self.weights))
 
         for inputs, d_values in zip(self.inputs, d_valuesBatched):
             d_inputs.append(super().backward(d_values, inputs))

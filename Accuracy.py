@@ -1,5 +1,8 @@
 import math
-import Mathlib
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
 
 class Accuracy_hard:
     """ calculates how accurate the the result is, for the hard version, it gets an array of index (must be all 0 and a single value has to be 1), and it returns 1 if that most likely output is at the correct index and 0 if its not """

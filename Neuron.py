@@ -1,5 +1,8 @@
 import Activation
-import Mathlib
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
 
 class Neuron:
     """ A single neuron, stores its inputs, weights, bias, and activation function """

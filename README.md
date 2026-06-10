@@ -2,6 +2,8 @@
 
 A lightweight, fully functional deep learning engine written in **pure Python** (no PyTorch, no TensorFlow, no NumPy). This project includes everything needed to train and run a fully functional custom Neural Network. I used this  to then train a Neural Network that detects whether you draw a square or not. It mapped the image onto a 1D space using a **Hilbert Curve** (so that the resolution of the image would not force a full retraining of the Neural Network), then trains the network and saves it.
 
+I have also coded the Mathlib as a  C++ library which can be used instead of the python-native version and massively improved performance. The library implements many of the low-level mathematical operations used throughout the network and can be used as a drop-in acceleration layer. However, the entire thing can still run in pure Python without the C++ extension.
+
 ---
 
 # Overview
@@ -72,6 +74,10 @@ Every part of the neural network is implemented manually using only Python:
 * Accuracy metrics
 
 No machine learning libraries are used.
+
+### C++ speed improvements
+
+There are two mathlibs that I built, one being in pure python and the other being made in C++. When using the C++ version, performance is much faster and it can help build complex neural networks much faster. However, it is is not required.
 
 
 ---
