@@ -56,12 +56,12 @@ class SoftmaxCrossEntropy:
 
     def forward(self, outputs: list[float], target: int) -> float:
         self.target = target
-        self.softmaxOutput = Activation.Softmax.forward(outputs)
+        self.softmaxOutput = Activation.ProtectedSoftmax.forward(outputs)
         return(Entropy.forwardSparse(self.softmaxOutput, target))
 
     def forward_batch(self, outputs: list[list[float]], targets: list[int]) -> float:
         self.target = targets
-        self.softmaxOutput = Activation.Softmax.forward_batch(outputs)
+        self.softmaxOutput = Activation.ProtectedSoftmax.forward_batch(outputs)
         return(Entropy.forwardSparse_batch(self.softmaxOutput, targets))
 
     def backward(self, dvalue=1) -> list[float]:

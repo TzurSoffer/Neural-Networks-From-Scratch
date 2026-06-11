@@ -25,22 +25,22 @@ PYBIND11_MODULE(mathlib, m) {
     m.def("hilbertUnflatten", &hilbertUnflatten);
 
     m.def("sum", py::overload_cast<const std::vector<int>&>(&sum));
-    m.def("sum", py::overload_cast<const std::vector<float>&>(&sum));
+    m.def("sum", py::overload_cast<const std::vector<double>&>(&sum));
 
-    m.def("mean", py::overload_cast<std::vector<int>>(&mean));
-    m.def("mean", py::overload_cast<std::vector<float>>(&mean));
+    m.def("mean", py::overload_cast<const std::vector<int>&>(&mean));
+    m.def("mean", py::overload_cast<const std::vector<double>&>(&mean));
 
-    m.def("argmax", py::overload_cast<std::vector<int>>(&argmax));
-    m.def("argmax", py::overload_cast<std::vector<float>>(&argmax));
-    m.def("argmin", py::overload_cast<std::vector<int>>(&argmin));
-    m.def("argmin", py::overload_cast<std::vector<float>>(&argmin));
+    m.def("argmax", py::overload_cast<const std::vector<int>&>(&argmax));
+    m.def("argmax", py::overload_cast<const std::vector<double>&>(&argmax));
+    m.def("argmin", py::overload_cast<const std::vector<int>&>(&argmin));
+    m.def("argmin", py::overload_cast<const std::vector<double>&>(&argmin));
 
     m.def("zeroes", py::overload_cast<int>(&zeroes));
     m.def("zeroes", py::overload_cast<int, int>(&zeroes));
 
     m.def("vectorScalerMult",
-          py::overload_cast<std::vector<float>, float>(&vectorScalerMult));
+          py::overload_cast<const std::vector<double>&, double>(&vectorScalerMult));
 
     m.def("vectorScalerMult",
-          py::overload_cast<std::vector<std::vector<float>>, float>(&vectorScalerMult));
+          py::overload_cast<const std::vector<std::vector<double>>&, double>(&vectorScalerMult));
 }

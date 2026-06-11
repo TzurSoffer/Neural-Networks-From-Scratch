@@ -15,7 +15,11 @@ class Batch(Layer):
 
     def forward(self, inputs) -> list[list[float]]:
         """ Forward all layers in the batch and return their outputs """
-        res = [super().forward(i) for i in inputs]
+        res = []
+        self.perActivationOutBatched = []
+        for i in inputs:
+            res.append(super().forward(i))
+            self.perActivationOutBatched.append(self.perActivationOut)
         self.inputs = inputs
         return(res)
 
@@ -27,7 +31,8 @@ class Batch(Layer):
         d_weights = Mathlib.zeroes(len(self.weights), len(self.weights[0]))
         d_biases = Mathlib.zeroes(len(self.weights))
 
-        for inputs, d_values in zip(self.inputs, d_valuesBatched):
+        for inputs, d_values, perActivationOut in zip(self.inputs, d_valuesBatched, self.perActivationOutBatched):
+            self.perActivationOut = perActivationOut
             d_inputs.append(super().backward(d_values, inputs))
 
             d_weights = Mathlib.addTwoMatrices(d_weights, self.d_weights)  #< self.d_weights changed because we called super

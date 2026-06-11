@@ -6,3 +6,4 @@ dl.py
 ex.py
 build
 *.egg-info
+trainedModel_83percent.json

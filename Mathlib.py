@@ -5,7 +5,7 @@ def zeroes(*shape):
     if len(shape) == 1:
         return([0.0]*shape[0])
     else:
-        return([zeroes(shape[1:]) for i in range(shape[0])])
+        return([zeroes(*shape[1:]) for i in range(shape[0])])
 
 def clip(val:float, minVal:float=0.0, maxVal:float=1.0) -> float:
     return(min(maxVal, max(minVal, val)))
