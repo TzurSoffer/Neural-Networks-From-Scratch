@@ -39,7 +39,7 @@ double clipAboveZeroBelowOne(double val) {
     return clip(val, 1e-7, 1.0 - 1e-7);
 }
 
-float sum(const std::vector<int>& vals) {
+double sum(const std::vector<int>& vals) {
     return std::accumulate(vals.begin(), vals.end(), 0.0f);
 }
 
@@ -47,12 +47,28 @@ double sum(const std::vector<double>& vals) {
     return std::accumulate(vals.begin(), vals.end(), 0.0);
 }
 
-float mean(const std::vector<int>& vals) {
+double mean(const std::vector<int>& vals) {
     return sum(vals) / vals.size();
 }
 
 double mean(const std::vector<double>& vals) {
     return sum(vals) / vals.size();
+}
+
+double max(const std::vector<double>& vals) {
+    if (vals.empty()) {
+        throw std::invalid_argument("max() requires a non-empty vector");
+    }
+
+    double largest = vals[0];
+
+    for (int i = 1; i < vals.size(); i++) {
+        if (vals[i] > largest) {
+            largest = vals[i];
+        }
+    }
+
+    return largest;
 }
 
 int argmax(const std::vector<int>& vals) {

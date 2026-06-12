@@ -48,11 +48,6 @@ class Softmax:
         return(vals)
 
     @staticmethod
-    def forward_batch(vals: list[list[float]]) -> list[list[float]]:
-        """ same as regular forward, but for a batch """
-        return([Softmax.forward(val) for val in vals])
-
-    @staticmethod
     def backward(vals):
         """ derivative of e^x/(sum(e^x) for x in vals) with respect to x
         For proof, see image above or in 'proofs_math/ActivationFuncs'"""
@@ -67,8 +62,14 @@ class Softmax:
             jacobian.append(row)
         return(jacobian)
 
+class Softmax_batch:
     @staticmethod
-    def backward_batch(vals):
+    def forward(vals: list[list[float]]) -> list[list[float]]:
+        """ same as regular forward, but for a batch """
+        return([Softmax.forward(val) for val in vals])
+
+    @staticmethod
+    def backward(vals):
         return([Softmax.backward(val) for val in vals])
 
 class ProtectedSoftmax(Softmax):
@@ -78,7 +79,8 @@ class ProtectedSoftmax(Softmax):
         """ softmax, but between 0 and 1 """
         maxVal = max(vals)
         return(Softmax.forward([val-maxVal for val in vals]))
-    
+
+class ProtectedSoftmax_batch(Softmax_batch):
     @staticmethod
-    def forward_batch(vals):
+    def forward(vals):
         return([ProtectedSoftmax.forward(val) for val in vals])

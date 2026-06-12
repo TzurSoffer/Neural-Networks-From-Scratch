@@ -23,31 +23,34 @@ class Entropy:
         return(out)
 
     @staticmethod
-    def forward_batch(vals:list[float], target:list[float]) -> float:
-        """ Calculate the cross entropy loss of a softmax output, but for batches """
-        return(Mathlib.mean([Entropy.forward(val, t) for val, t in zip(vals, target)]))
-
-    @staticmethod
-    def forwardSparse(vals:list[float], target: int) -> float:
-        """ Forward method optimized for a hot target index """
-        return(Entropy._forward_single(vals[target]))
-
-    @staticmethod
-    def forwardSparse_batch(vals:list[list[float]], targets: list[int]) -> float:
-        """ Forward method optimized for a hot target index, but for batches """
-        return(Mathlib.mean([Entropy.forwardSparse(val, t) for val, t in zip(vals, targets)]))
-
-    @staticmethod
     def backward(vals: list[float], targets: list[float]) -> list[float]:
         """ Backward function of -t*ln(val) = -t/val """
         return([-t / Mathlib.clipAboveZeroBelowOne(v) for v, t in zip(vals, targets)])
 
+class Entropy_batch:
     @staticmethod
-    def backwardSparse(vals, targetIndex):
+    def forward(vals:list[float], target:list[float]) -> float:
+        """ Calculate the cross entropy loss of a softmax output, but for batches """
+        return(Mathlib.mean([Entropy.forward(val, t) for val, t in zip(vals, target)]))
+
+class Entropy_sparse:
+    @staticmethod
+    def forward(vals:list[float], target: int) -> float:
+        """ Forward method optimized for a hot target index """
+        return(Entropy._forward_single(vals[target]))
+
+    @staticmethod
+    def backward(vals, targetIndex):
         """ Backward method optimized for a hot target index """
         out = [0.0]*len(vals)  #< initialize zeroes because t would be zero for every value except the hot and the formula is -t/ln(val)
         out[targetIndex] = -1 / Mathlib.clipAboveZeroBelowOne(vals[targetIndex])
         return(out)
+
+class Entropy_sparse_batch:
+    @staticmethod
+    def forward(vals:list[list[float]], targets: list[int]) -> float:
+        """ Forward method optimized for a hot target index, but for batches """
+        return(Mathlib.mean([Entropy_sparse.forward(val, t) for val, t in zip(vals, targets)]))
 
 class SoftmaxCrossEntropy:
     def __init__(self):
@@ -59,11 +62,6 @@ class SoftmaxCrossEntropy:
         self.softmaxOutput = Activation.ProtectedSoftmax.forward(outputs)
         return(Entropy.forwardSparse(self.softmaxOutput, target))
 
-    def forward_batch(self, outputs: list[list[float]], targets: list[int]) -> float:
-        self.target = targets
-        self.softmaxOutput = Activation.ProtectedSoftmax.forward_batch(outputs)
-        return(Entropy.forwardSparse_batch(self.softmaxOutput, targets))
-
     def backward(self, dvalue=1) -> list[float]:
         ## derivative of err(softmax) = softmaxVector-targetVector
         self.softmaxOutput[self.target] -= 1
@@ -71,7 +69,15 @@ class SoftmaxCrossEntropy:
             self.softmaxOutput = [val*dvalue for val in self.softmaxOutput]
         return(self.softmaxOutput)
 
-    def backward_batch(self, dvalue=1) -> list[list[float]]:
+
+
+class SoftmaxCrossEntropy_batch:
+    def forward(self, outputs: list[list[float]], targets: list[int]) -> float:
+        self.target = targets
+        self.softmaxOutput = Activation.ProtectedSoftmax_batch.forward(outputs)
+        return(Entropy_sparse_batch.forward(self.softmaxOutput, targets))
+
+    def backward(self, dvalue=1) -> list[list[float]]:
         batchSize = len(self.softmaxOutput)
         out = []
 

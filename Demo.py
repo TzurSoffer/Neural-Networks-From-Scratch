@@ -73,7 +73,7 @@ class DrawingApp:
 
         out1 = spiralLayer1.forward(batch_input)
         out2 = spiralLayer2.forward(out1)
-        probabilities = Activation.Softmax.forward_batch(out2)[0]
+        probabilities = Activation.Softmax_batch.forward(out2)[0]
         prob_non_square = probabilities[0]
         prob_square = probabilities[1]
 

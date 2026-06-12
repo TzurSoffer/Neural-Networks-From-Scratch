@@ -6,11 +6,13 @@ double randomNumber(double minimum, double maximum, int decimals);
 double clip(double val, double minVal, double maxVal);
 double clipAboveZeroBelowOne(double val);
 
-float sum(const std::vector<int>& vals);
+double sum(const std::vector<int>& vals);
 double sum(const std::vector<double>& vals);
 
-float mean(const std::vector<int>& vals);
+double mean(const std::vector<int>& vals);
 double mean(const std::vector<double>& vals);
+
+double max(const std::vector<double>& vals);
 
 int argmax(const std::vector<int>& vals);
 int argmax(const std::vector<double>& vals);
