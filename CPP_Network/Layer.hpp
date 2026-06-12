@@ -8,9 +8,6 @@
 #include "Mathlib.hpp"
 #include "Activation.hpp"
 
-typedef double (*ActivationForwardFunc)(double);
-typedef double (*ActivationBackwardFunc)(double);
-
 class Layer {
 private:
     int inputCount, neuronCount;

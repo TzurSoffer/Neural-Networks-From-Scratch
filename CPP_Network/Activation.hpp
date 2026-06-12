@@ -18,6 +18,9 @@ public:
 };
 
 class LeakyReLU {
+/*
+ReLU with small negative slope to prevent dying ReLU problem. Gradient flows even when val < 0
+*/
 public:
     static constexpr double alpha = 0.01;
     static double forward(double val);
@@ -25,6 +28,9 @@ public:
 };
 
 class Softmax {
+/*
+converts any output to be squashed from 0 to 1 and also had a nice derivative when paired with  Cross-Entropy
+*/
 public:
     static std::vector<double> forward(std::vector<double> vals);
     static std::vector<std::vector<double>> backward(const std::vector<double>& vals);

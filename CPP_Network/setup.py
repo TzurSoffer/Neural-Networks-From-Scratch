@@ -7,7 +7,7 @@ extra_compile_args = ["/std:c++17", "/O2"]
 # This setup handles the C++ source files
 ext = Extension(
     "NeuralNetwork_CPP", # This must match the name in PYBIND11_MODULE
-    sources=["bindings.cpp", "Layer.cpp", "Mathlib.cpp"],
+    sources=["bindings.cpp", "Layer.cpp", "Mathlib.cpp", "Activation.cpp"],
     include_dirs=[pybind11.get_include()],
     language="c++",
     extra_compile_args=extra_compile_args,

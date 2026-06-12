@@ -5,3 +5,6 @@ enum class ActivationType {
     LEAKY_RELU,
     PASS
 };
+
+typedef double (*ActivationForwardFunc)(double);
+typedef double (*ActivationBackwardFunc)(double);
