@@ -23,12 +23,10 @@ except FileNotFoundError:
 spiralLayer1 = Batch(1, 32*32, 32, ActivationType.LEAKY_RELU)
 spiralLayer2 = Batch(1, 32, 2, ActivationType.PASS)
 
-print("a")
 spiralLayer1.setWeights(savedModel["layer1"]["weights"])
 spiralLayer1.setBiases(savedModel["layer1"]["biases"])
 spiralLayer2.setWeights(savedModel["layer2"]["weights"])
 spiralLayer2.setBiases(savedModel["layer2"]["biases"])
-print("b")
 
 class DrawingApp:
     def __init__(self, root):
