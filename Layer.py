@@ -15,7 +15,8 @@ class Layer:
         self.activationFunc = activationFunc
         self.weights, self.biases = self._createLayerData(inputCount, neuronCount)
 
-        self.out = None
+        self.out = []
+        self.preActivationOut = []
         self.inputs = []
         self.d_inputs = []
         self.d_weights = []
@@ -45,7 +46,7 @@ class Layer:
         self.out = [self.activationFunc.forward(out) for out in self.preActivationOut]
         return(self.out)
 
-    def backward(self, d_values:list[float], inputs=None) -> list[float]:
+    def backward(self, d_values:list[float], inputs=None, preActivationOut=None) -> list[float]:
         """ Compute gradient 
         The following is the explanation for the backward for a SINGLE neuron, a layer would just be a list of these.
             since forward is computed as Activation(sum(x1*w1, x2*w2..., bias)),
@@ -57,10 +58,12 @@ class Layer:
         """
         if inputs == None:
             inputs = self.inputs
+        if preActivationOut == None:
+            preActivationOut = self.preActivationOut
         self.d_inputs = Mathlib.zeroes(len(inputs))
         self.d_weights = []
         self.d_biases = []
-        for out, weights, d_val in zip(self.preActivationOut, self.weights, d_values):
+        for out, weights, d_val in zip(preActivationOut, self.weights, d_values):
             activation_dx = self.activationFunc.backward(out)*d_val      #< chain rule
             self.d_inputs = Mathlib.addTwoVectors([activation_dx*w for w in weights], self.d_inputs)   #< Total derivative is the sum of the derivatives with respect to the input of each neuron since they are all the same inputs
             self.d_weights.append([activation_dx*i for i in inputs])
@@ -71,10 +74,27 @@ class Layer:
     def getWeights(self) -> list[list[float]]:
         """ return a list of lists of all weights """
         return(self.weights)
+    def setWeights(self, weights: list[list[float]]) -> None:
+        self.weights = weights
+    def addToWeight(self, indexRow: int, indexCol: int, val: float) -> None:
+        self.weights[indexRow][indexCol] = val
+
     def getBiases(self) -> list[float]:
         """ return a list of all biases """
         return(self.biases)
-    def getOutput(self) -> list[float]:
+    def setBiases(self, biases: list[float]) -> None:
+        self.biases = biases
+    def addToBias(self, index: int, val: float) -> None:
+        self.biases[index] = val
+
+    def getOutputs(self) -> list[float]:
         return(self.out)
+    def getPreActivationOutputs(self) -> list[float]:
+        return(self.preActivationOut)
+
     def getInputGradient(self) -> list[float]:
+        return(self.d_inputs)
+    def getWeightsGradient(self) -> list[list[float]]:
+        return(self.d_inputs)
+    def getBiasesGradient(self) -> list[float]:
         return(self.d_inputs)

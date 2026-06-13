@@ -6,6 +6,11 @@ class Optimizer_SGD:
         self.learning_rate = learning_rate
 
     def update(self, layer:Layer) -> None:
-        for i in range(len(layer.weights)):
-            layer.weights[i] = [w - self.learning_rate * dw for w, dw in zip(layer.weights[i], layer.d_weights[i])]
-            layer.biases[i] -= self.learning_rate * layer.d_biases[i]
+        d_weights = layer.getWeightsGradient()
+        d_biases = layer.getBiasesGradient()
+        for n in range(len(d_weights)):
+            for i in range(len(d_weights[n])):
+                weightDelta = -self.learning_rate * d_weights[n][i]
+                layer.addToWeight(n, i, weightDelta)
+            biasDelta = -self.learning_rate * d_biases[n]
+            layer.addToBias(n, biasDelta)

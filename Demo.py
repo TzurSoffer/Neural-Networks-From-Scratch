@@ -3,12 +3,14 @@ import json
 
 # Import your custom framework modules
 try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+    import mathlib as Mathlib                             #< c++ version (much faster). Must be compiled first
+    from NeuralNetwork_CPP import Batch, ActivationType   #< c++ version (much faster). Must be compiled first
 except ImportError:
+    print("C++ modules not compiled, falling back to python.")
     import Mathlib
+    from Batch import Batch
+
 import Activation
-from Layer import Layer
-from Batch import Batch
 
 try:
     with open("trainedModel.json", "r") as f:
@@ -18,14 +20,15 @@ except FileNotFoundError:
     print("Error: 'trainedModel.json' not found. Please train and save your model first.")
     exit()
 
-spiralLayer1 = Batch(inputCount=32*32, neuronCount=32, activationFunc=Activation.LeakyReLU)
-spiralLayer2 = Batch(inputCount=32, neuronCount=2, activationFunc=Activation.Pass)
+spiralLayer1 = Batch(1, 32*32, 32, ActivationType.LEAKY_RELU)
+spiralLayer2 = Batch(1, 32, 2, ActivationType.PASS)
 
-spiralLayer1.weights = savedModel["layer1"]["weights"]
-spiralLayer1.biases = savedModel["layer1"]["biases"]
-spiralLayer2.weights = savedModel["layer2"]["weights"]
-spiralLayer2.biases = savedModel["layer2"]["biases"]
-
+print("a")
+spiralLayer1.setWeights(savedModel["layer1"]["weights"])
+spiralLayer1.setBiases(savedModel["layer1"]["biases"])
+spiralLayer2.setWeights(savedModel["layer2"]["weights"])
+spiralLayer2.setBiases(savedModel["layer2"]["biases"])
+print("b")
 
 class DrawingApp:
     def __init__(self, root):

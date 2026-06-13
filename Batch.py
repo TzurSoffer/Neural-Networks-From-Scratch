@@ -4,45 +4,86 @@ except ImportError:
     import Mathlib
 import Activation
 from Layer import Layer
+import Activation
 
-class Batch(Layer):
+try:
+    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
+except ImportError:
+    import Mathlib
+
+class Batch():
     """ A batch is a layer with multiple sets of inputs on the same weights and biases. It processes multiple samples at once in a batch and applies the average of the gradients. This improves speed and reduces noise"""
-    def __init__(self, inputCount: int, neuronCount: int,
-                 activationFunc: Activation=Activation.Pass          #< Neuron-level activation function
+    def __init__(self,
+                 batchSize: int,                            #< used for compatibility with C++, but calculated dynamically in python (can safely be ignored here)
+                 inputCount: int,
+                 neuronCount: int,
+                 activationFunc: Activation=Activation.Pass #< Neuron-level activation function
                  ):
-
-        super().__init__(inputCount, neuronCount, activationFunc)
+        self.batchSize = batchSize
+        self.neuronCount = neuronCount
+        self.inputCount = inputCount
+        self.layer = Layer(inputCount, neuronCount, activationFunc)
+        
+        self.out = []
+        self.preActivationOutBatched = []
+        self.inputs = []
+        self.d_inputs = []
+        self.d_weights = []
+        self.d_biases = []
 
     def forward(self, inputs) -> list[list[float]]:
         """ Forward all layers in the batch and return their outputs """
-        res = []
-        self.perActivationOutBatched = []
-        for i in inputs:
-            res.append(super().forward(i))
-            self.perActivationOutBatched.append(self.perActivationOut)
+        self.out = []
+        self.preActivationOutBatched = []
         self.inputs = inputs
-        return(res)
+        for i in inputs:
+            self.out.append(self.layer.forward(i))
+            self.preActivationOutBatched.append(self.layer.getPreActivationOutputs())
+        return(self.out)
 
-    def backward(self, d_valuesBatched: list[list[float]]) -> list[list[float]]:
+    def backward(self, d_values: list[list[float]]) -> list[list[float]]:
         """ Average the gradients for the batch for more details, look at the docstring of Layer"""
 
-        d_inputs = []
+        self.d_inputs = []
+        self.d_weights = Mathlib.zeroes(self.neuronCount, self.inputCount)
+        self.d_biases = Mathlib.zeroes(self.neuronCount)
 
-        d_weights = Mathlib.zeroes(len(self.weights), len(self.weights[0]))
-        d_biases = Mathlib.zeroes(len(self.weights))
+        for inputs, current_d_values, preActivationOut in zip(self.inputs, d_values, self.preActivationOutBatched):
+            self.d_inputs.append(self.layer.backward(current_d_values, inputs, preActivationOut=preActivationOut))
 
-        for inputs, d_values, perActivationOut in zip(self.inputs, d_valuesBatched, self.perActivationOutBatched):
-            self.perActivationOut = perActivationOut
-            d_inputs.append(super().backward(d_values, inputs))
-
-            d_weights = Mathlib.addTwoMatrices(d_weights, self.d_weights)  #< self.d_weights changed because we called super
-            d_biases = Mathlib.addTwoVectors(d_biases, self.d_biases)      #< self.d_biases changed because we called super
-        self.d_weights = d_weights
-        self.d_biases = d_biases
+            self.d_weights = Mathlib.addTwoMatrices(self.d_weights, self.layer.getWeightsGradient())  #< self.d_weights changed because we called super
+            self.d_biases = Mathlib.addTwoVectors(self.d_biases, self.layer.getBiasesGradient())      #< self.d_biases changed because we called super
 
         # AVG is handled at the Loss function (more efficient)
         # scaleFactor = 1 / len(self.inputs)
-        # self.d_weights = Mathlib.scale(d_weights, scaleFactor)
-        # self.d_biases = Mathlib.scale(d_biases, scaleFactor)
+        # self.d_weights = Mathlib.scale(self.d_weights, scaleFactor)
+        # self.d_biases = Mathlib.scale(self.d_biases, scaleFactor)
 
-        return(d_inputs)
+        return(self.d_inputs)
+
+    def getWeights(self) -> list[list[float]]:
+        """ return a list of lists of all weights """
+        return(self.layer.getWeights())
+    def setWeights(self, biases: list[list[float]]) -> None:
+        self.layer.setWeights(biases)
+    def addToWeight(self, indexRow: int, indexCol: int, val: float) -> None:
+        self.layer.addToWeight(indexRow, indexCol, val)
+
+    def getBiases(self) -> list[float]:
+        """ return a list of all biases """
+        return(self.layer.biases)
+    def setBiases(self, biases: list[float]) -> None:
+        self.layer.setBiases(biases)
+    def addToBias(self, index: int, val: float) -> None:
+        self.layer.addToBias(index, val)
+
+    def getOutputs(self) -> list[list[float]]:
+        return(self.out)
+    def getPreActivationOutputs(self) -> list[list[float]]:
+        return(self.preActivationOut)
+    def getInputGradient(self) -> list[list[float]]:
+        return(self.d_inputs)
+    def getWeightsGradient(self) -> list[list[float]]:
+        return(self.d_weights)
+    def getBiasesGradient(self) -> list[float]:
+        return(self.d_biases)

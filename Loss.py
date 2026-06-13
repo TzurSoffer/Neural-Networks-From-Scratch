@@ -60,7 +60,7 @@ class SoftmaxCrossEntropy:
     def forward(self, outputs: list[float], target: int) -> float:
         self.target = target
         self.softmaxOutput = Activation.ProtectedSoftmax.forward(outputs)
-        return(Entropy.forwardSparse(self.softmaxOutput, target))
+        return(Entropy_sparse.forward(self.softmaxOutput, target))
 
     def backward(self, dvalue=1) -> list[float]:
         ## derivative of err(softmax) = softmaxVector-targetVector

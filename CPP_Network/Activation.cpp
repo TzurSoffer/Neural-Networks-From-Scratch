@@ -69,7 +69,7 @@ std::vector<std::vector<double>> Softmax::backward(const std::vector<double>& va
 
 std::vector<std::vector<double>> Softmax_batch::forward(const std::vector<std::vector<double>>& vals) {
     /* same as regular forward, but for a batch */
-    std::vector<std::vector<double>> result = std::vector<std::vector<double>>(vals.size(), std::vector<double>(vals.size(), 0.0));
+    std::vector<std::vector<double>> result = std::vector<std::vector<double>>(vals.size(), std::vector<double>(vals[0].size(), 0.0));
 
     for (int i=0; i<vals.size(); i++) {
         result[i] = Softmax::forward(vals[i]);
@@ -83,7 +83,7 @@ std::vector<std::vector<std::vector<double>>> Softmax_batch::backward(const std:
             vals.size(),
             std::vector<std::vector<double>>(
                 vals.size(),
-                std::vector<double>(vals.size(), 0.0)
+                std::vector<double>(vals[0].size(), 0.0)
             )
         );
     for (int i=0; i<vals.size(); i++) {
@@ -111,9 +111,9 @@ std::vector<std::vector<double>> ProtectedSoftmax::backward(
 
 
 std::vector<std::vector<double>> ProtectedSoftmax_batch::forward(const std::vector<std::vector<double>>& vals) {
-    std::vector<std::vector<double>> result = std::vector<std::vector<double>>(vals.size(), std::vector<double>(vals.size(), 0.0));
+    std::vector<std::vector<double>> result = std::vector<std::vector<double>>(vals.size(), std::vector<double>(vals[0].size(), 0.0));
     for (int i=0; i<vals.size(); i++) {
-        result[i] = Softmax::forward(vals[i]);
+        result[i] = ProtectedSoftmax::forward(vals[i]);
         }
     return result;
 }
