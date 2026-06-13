@@ -9,6 +9,7 @@ except ImportError:
     print("C++ modules not compiled, falling back to python.")
     import PYTHON_Network.Mathlib as Mathlib
     from PYTHON_Network.Batch import Batch
+    from PYTHON_Network.ActivationTypes import ActivationType
 
 import PYTHON_Network.Activation as Activation
 
