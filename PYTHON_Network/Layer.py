@@ -25,7 +25,7 @@ class Layer:
             return Activation.Pass
         if type == ActivationType.RELU:
             return Activation.ReLU
-        if type == Activation.LeakyReLU:
+        if type == ActivationType.LEAKY_RELU:
             return Activation.LeakyReLU
 
     def _createLayerData(self, inputCount: int=10, neuronCount: int=5) -> tuple[list[float], list[float]]:
@@ -83,7 +83,7 @@ class Layer:
     def setWeights(self, weights: list[list[float]]) -> None:
         self.weights = weights
     def addToWeight(self, indexRow: int, indexCol: int, val: float) -> None:
-        self.weights[indexRow][indexCol] = val
+        self.weights[indexRow][indexCol] += val
 
     def getBiases(self) -> list[float]:
         """ return a list of all biases """
@@ -91,7 +91,7 @@ class Layer:
     def setBiases(self, biases: list[float]) -> None:
         self.biases = biases
     def addToBias(self, index: int, val: float) -> None:
-        self.biases[index] = val
+        self.biases[index] += val
 
     def getOutputs(self) -> list[float]:
         return(self.out)
@@ -101,6 +101,6 @@ class Layer:
     def getInputGradient(self) -> list[float]:
         return(self.d_inputs)
     def getWeightsGradient(self) -> list[list[float]]:
-        return(self.d_inputs)
+        return(self.d_weights)
     def getBiasesGradient(self) -> list[float]:
-        return(self.d_inputs)
+        return(self.d_biases)

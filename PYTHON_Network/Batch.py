@@ -17,7 +17,7 @@ class Batch():
         self.layer = Layer(inputCount, neuronCount, type)
         
         self.out = []
-        self.preActivationOutBatched = []
+        self.preActivationOut = []
         self.inputs = []
         self.d_inputs = []
         self.d_weights = []
@@ -26,11 +26,11 @@ class Batch():
     def forward(self, inputs) -> list[list[float]]:
         """ Forward all layers in the batch and return their outputs """
         self.out = []
-        self.preActivationOutBatched = []
+        self.preActivationOut = []
         self.inputs = inputs
         for i in inputs:
             self.out.append(self.layer.forward(i))
-            self.preActivationOutBatched.append(self.layer.getPreActivationOutputs())
+            self.preActivationOut.append(self.layer.getPreActivationOutputs())
         return(self.out)
 
     def backward(self, d_values: list[list[float]]) -> list[list[float]]:
@@ -40,8 +40,8 @@ class Batch():
         self.d_weights = Mathlib.zeroes(self.neuronCount, self.inputCount)
         self.d_biases = Mathlib.zeroes(self.neuronCount)
 
-        for inputs, current_d_values, preActivationOut in zip(self.inputs, d_values, self.preActivationOutBatched):
-            self.d_inputs.append(self.layer.backward(current_d_values, inputs, preActivationOut=preActivationOut))
+        for inputs, current_d_values, preActivationOut_current in zip(self.inputs, d_values, self.preActivationOut):
+            self.d_inputs.append(self.layer.backward(current_d_values, inputs, preActivationOut=preActivationOut_current))
 
             self.d_weights = Mathlib.addTwoMatrices(self.d_weights, self.layer.getWeightsGradient())  #< self.d_weights changed because we called super
             self.d_biases = Mathlib.addTwoVectors(self.d_biases, self.layer.getBiasesGradient())      #< self.d_biases changed because we called super
