@@ -1,8 +1,7 @@
 # Shape Classifier from Scratch
 
-A lightweight, fully functional deep learning engine written in **pure Python** (no PyTorch, no TensorFlow, no NumPy). This project includes everything needed to train and run a fully functional custom Neural Network. I used this  to then train a Neural Network that detects whether you draw a square or not. It mapped the image onto a 1D space using a **Hilbert Curve** (so that the resolution of the image would not force a full retraining of the Neural Network), then trains the network and saves it.
-
-I have also coded the Mathlib as a  C++ library which can be used instead of the python-native version and massively improved performance. The library implements many of the low-level mathematical operations used throughout the network and can be used as a drop-in acceleration layer. However, the entire thing can still run in pure Python without the C++ extension.
+A lightweight, fully functional neural network engine written in **pure Python** as well as a neural network engine written in **pure C++** (no PyTorch, no TensorFlow, no NumPy). This project includes everything needed to train and run a fully functional custom Neural Network. I used this to then train a Neural Network that detects whether you draw a square or not. It mapped the image onto a 1D space using a **Hilbert Curve** (so that the resolution of the image would not force a full retraining of the Neural Network), then trains the network and saves it.
+The network can be ran in pure python mode or as a hybrid python and C++ mode where most of the heavy lifting is done in C++ to drastically speed up training (21x speed).
 
 ---
 
@@ -52,6 +51,7 @@ Building a network without external libraries teaches me:
 * Optimization techniques
 * Batch learning
 * Activation functions
+* C++
 
 and teaches me how to properly use tensorflow/pytorch if I ever need to make a Neural Network.
 
@@ -61,7 +61,7 @@ and teaches me how to properly use tensorflow/pytorch if I ever need to make a N
 
 ### 100% From Scratch
 
-Every part of the neural network is implemented manually using only Python:
+Every part of the neural network is implemented manually using only Python and C++:
 
 * Matrix operations
 * Dense layers
@@ -77,7 +77,7 @@ No machine learning libraries are used.
 
 ### C++ speed improvements
 
-There are two mathlibs that I built, one being in pure python and the other being made in C++. When using the C++ version, performance is much faster and it can help build complex neural networks much faster. However, it is is not required.
+There are two `Mathlib`, `Layer`, `Activation`, and `Batch` that I built, one being in pure python and the other being made in C++. When using the C++ version, performance is much faster and it can help build complex neural networks much faster. However, it is is not required and the entire network can still run in only python.
 
 
 ---
