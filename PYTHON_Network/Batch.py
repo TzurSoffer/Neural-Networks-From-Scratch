@@ -1,15 +1,7 @@
-try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
-except ImportError:
-    import Mathlib
-import Activation
-from Layer import Layer
-import Activation
-
-try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
-except ImportError:
-    import Mathlib
+import PYTHON_Network.Mathlib as Mathlib
+import PYTHON_Network.Activation as Activation
+from PYTHON_Network.ActivationTypes import ActivationType
+from PYTHON_Network.Layer import Layer
 
 class Batch():
     """ A batch is a layer with multiple sets of inputs on the same weights and biases. It processes multiple samples at once in a batch and applies the average of the gradients. This improves speed and reduces noise"""
@@ -17,12 +9,12 @@ class Batch():
                  batchSize: int,                            #< used for compatibility with C++, but calculated dynamically in python (can safely be ignored here)
                  inputCount: int,
                  neuronCount: int,
-                 activationFunc: Activation=Activation.Pass #< Neuron-level activation function
+                 type: Activation=ActivationType.PASS #< Neuron-level activation function
                  ):
         self.batchSize = batchSize
         self.neuronCount = neuronCount
         self.inputCount = inputCount
-        self.layer = Layer(inputCount, neuronCount, activationFunc)
+        self.layer = Layer(inputCount, neuronCount, type)
         
         self.out = []
         self.preActivationOutBatched = []

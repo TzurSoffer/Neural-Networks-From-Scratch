@@ -4,7 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "Types.hpp"
+#include "ActivationTypes.hpp"
 #include "Mathlib.hpp"
 #include "Activation.hpp"
 

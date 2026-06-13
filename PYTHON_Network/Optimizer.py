@@ -1,4 +1,4 @@
-from Layer import Layer
+from PYTHON_Network.Layer import Layer
 
 class Optimizer_SGD:
     """ Stochastic Gradient Descent optimizer changes the weights and biases based on the gradient descent (derivative) """

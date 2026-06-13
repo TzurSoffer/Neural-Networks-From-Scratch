@@ -1,8 +1,5 @@
 import math
-try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
-except ImportError:
-    import Mathlib
+import PYTHON_Network.Mathlib as Mathlib
 
 class Pass:
     """ returns x """

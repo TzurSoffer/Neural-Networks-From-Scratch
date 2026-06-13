@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include "Layer.hpp"
-#include "Types.hpp"
+#include "ActivationTypes.hpp"
 
 class Batch {
 /*

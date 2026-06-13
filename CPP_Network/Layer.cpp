@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "Layer.hpp"
-#include "Types.hpp"
+#include "ActivationTypes.hpp"
 #include "Mathlib.hpp"      // My custom mathlib
 #include "Activation.hpp"   // My custom Actiavtion Classes
 

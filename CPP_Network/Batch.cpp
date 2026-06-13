@@ -5,7 +5,7 @@
 #include "Activation.hpp"
 #include "Layer.hpp"
 #include "Activation.hpp"
-#include "Types.hpp"
+#include "ActivationTypes.hpp"
 #include "Batch.hpp"
 
 Batch::Batch(int batchSize, int inputCount, int neuronCount, ActivationType type) :

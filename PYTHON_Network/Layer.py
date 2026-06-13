@@ -1,18 +1,16 @@
-try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
-except ImportError:
-    import Mathlib
-import Activation
+import PYTHON_Network.Mathlib as Mathlib
+import PYTHON_Network.Activation as Activation
+from PYTHON_Network.ActivationTypes import ActivationType
 import math
 
 class Layer:
     """A collection of neurons forming a single layer in the network"""
     def __init__(self, inputCount: int, neuronCount: int,
-                 activationFunc: Activation=Activation.Pass,   #< Neuron-level activation function
+                 type: type=ActivationType.PASS,   #< Neuron-level activation function
                  ):
         
         self.inputsLen = inputCount
-        self.activationFunc = activationFunc
+        self.activationFunc = self._activationTypeToFunc(type)
         self.weights, self.biases = self._createLayerData(inputCount, neuronCount)
 
         self.out = []
@@ -21,6 +19,14 @@ class Layer:
         self.d_inputs = []
         self.d_weights = []
         self.d_biases = []
+    
+    def _activationTypeToFunc(self, type):
+        if type == ActivationType.PASS:
+            return Activation.Pass
+        if type == ActivationType.RELU:
+            return Activation.ReLU
+        if type == Activation.LeakyReLU:
+            return Activation.LeakyReLU
 
     def _createLayerData(self, inputCount: int=10, neuronCount: int=5) -> tuple[list[float], list[float]]:
         if self.activationFunc in (Activation.ReLU, Activation.LeakyReLU):

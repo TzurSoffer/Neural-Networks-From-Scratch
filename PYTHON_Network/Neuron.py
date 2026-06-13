@@ -1,8 +1,5 @@
-import Activation
-try:
-    import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
-except ImportError:
-    import Mathlib
+import PYTHON_Network.Activation as Activation
+import PYTHON_Network.Mathlib as Mathlib
 
 class Neuron:
     """ A single neuron, stores its inputs, weights, bias, and activation function """

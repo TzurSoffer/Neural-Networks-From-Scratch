@@ -2,8 +2,8 @@ import math
 try:
     import mathlib as Mathlib   #< c++ version (much faster training). Must be compiled first
 except ImportError:
-    import Mathlib
-import Activation
+    import PYTHON_Network.Mathlib as Mathlib
+import PYTHON_Network.Activation as Activation
 import copy
 
 """ Calculates the error of the output (mainly Softmax) using -log(x) """

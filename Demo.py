@@ -7,10 +7,10 @@ try:
     from NeuralNetwork_CPP import Batch, ActivationType   #< c++ version (much faster). Must be compiled first
 except ImportError:
     print("C++ modules not compiled, falling back to python.")
-    import Mathlib
-    from Batch import Batch
+    import PYTHON_Network.Mathlib as Mathlib
+    from PYTHON_Network.Batch import Batch
 
-import Activation
+import PYTHON_Network.Activation as Activation
 
 try:
     with open("trainedModel.json", "r") as f:

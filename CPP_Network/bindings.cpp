@@ -1,9 +1,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "Activation.hpp"
 #include "Layer.hpp"
 #include "Batch.hpp"
-#include "Types.hpp"
+#include "ActivationTypes.hpp"
 
 namespace py = pybind11;
 
@@ -15,6 +16,26 @@ PYBIND11_MODULE(NeuralNetwork_CPP, m) {
         .value("LEAKY_RELU", ActivationType::LEAKY_RELU)
         .value("PASS", ActivationType::PASS)
         .export_values();
+
+    py::class_<Layer>(m, "Activation")
+        .def(py::init<int, int, ActivationType>())
+
+        .def("forward", &Layer::forward)
+        .def("backward", py::overload_cast<const std::vector<double>&>(&Layer::backward), py::arg("d_values"))
+        .def("backward", py::overload_cast<const std::vector<double>&, const std::vector<double>&, const std::vector<double>&>(&Layer::backward), 
+                py::arg("d_values"), py::arg("inputs"), py::arg("preActivationOut"))
+
+        .def("getWeights", &Layer::getWeights)
+        .def("setWeights", &Layer::setWeights)
+        .def("addToWeight", &Layer::addToWeight)
+        .def("getBiases", &Layer::getBiases)
+        .def("setBiases", &Layer::setBiases)
+        .def("addToBias", &Layer::addToBias)
+        .def("getInputGradient", &Layer::getInputGradient)
+        .def("getOutputs", &Layer::getOutputs)
+        .def("getPreActivationOutputs", &Layer::getPreActivationOutputs)
+        .def("getWeightsGradient", &Layer::getWeightsGradient)
+        .def("getBiasesGradient", &Layer::getBiasesGradient);
 
     py::class_<Layer>(m, "Layer")
         .def(py::init<int, int, ActivationType>())
