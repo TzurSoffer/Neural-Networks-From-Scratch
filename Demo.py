@@ -4,11 +4,11 @@ import json
 # Import your custom framework modules
 try:
     import mathlib as Mathlib                             #< c++ version (much faster). Must be compiled first
-    from NeuralNetwork_CPP import Batch, ActivationType   #< c++ version (much faster). Must be compiled first
+    from NeuralNetwork_CPP import Layer, ActivationType   #< c++ version (much faster). Must be compiled first
 except ImportError:
     print("C++ modules not compiled, falling back to python.")
     import PYTHON_Network.Mathlib as Mathlib
-    from PYTHON_Network.Batch import Batch
+    from PYTHON_Network.Layer import Layer
     from PYTHON_Network.ActivationTypes import ActivationType
 
 import PYTHON_Network.Activation as Activation
@@ -21,13 +21,13 @@ except FileNotFoundError:
     print("Error: 'trainedModel.json' not found. Please train and save your model first.")
     exit()
 
-spiralLayer1 = Batch(1, 32*32, 32, ActivationType.LEAKY_RELU)
-spiralLayer2 = Batch(1, 32, 2, ActivationType.PASS)
+layer1 = Layer(32*32, 32, ActivationType.LEAKY_RELU)
+layer2 = Layer(32, 2, ActivationType.PASS)
 
-spiralLayer1.setWeights(savedModel["layer1"]["weights"])
-spiralLayer1.setBiases(savedModel["layer1"]["biases"])
-spiralLayer2.setWeights(savedModel["layer2"]["weights"])
-spiralLayer2.setBiases(savedModel["layer2"]["biases"])
+layer1.setWeights(savedModel["layer1"]["weights"])
+layer1.setBiases(savedModel["layer1"]["biases"])
+layer2.setWeights(savedModel["layer2"]["weights"])
+layer2.setBiases(savedModel["layer2"]["biases"])
 
 class DrawingApp:
     def __init__(self, root):
@@ -71,11 +71,10 @@ class DrawingApp:
     def infer(self, event):
         # Convert the 2D grid to 1D using Hilbert Curve
         flattened_X = Mathlib.hilbertFlatten(self.grid)
-        batch_input = [flattened_X]
 
-        out1 = spiralLayer1.forward(batch_input)
-        out2 = spiralLayer2.forward(out1)
-        probabilities = Activation.Softmax_batch.forward(out2)[0]
+        out1 = layer1.forward(flattened_X)
+        out2 = layer2.forward(out1)
+        probabilities = Activation.Softmax.forward(out2)
         prob_non_square = probabilities[0]
         prob_square = probabilities[1]
 
